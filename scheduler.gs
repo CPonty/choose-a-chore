@@ -2,26 +2,6 @@ var LOG_LEVEL = 0;
 
 // ------------------------------------------------------------
 
-/**
- * Retrieves all the rows in the active spreadsheet that contain data and logs the
- * values for each row.
- * For more information on using the Spreadsheet API, see
- * https://developers.google.com/apps-script/service_spreadsheet
- */
-function readRows() {
-  var sheet = SpreadsheetApp.getActiveSheet();
-  var rows = sheet.getDataRange();
-  var numRows = rows.getNumRows();
-  var values = rows.getValues();
-
-  for (var i = 0; i <= numRows - 1; i++) {
-    var row = values[i];
-    Logger.log(row);
-  }
-};
-
-// ------------------------------------------------------------
-
 Array.prototype.setAll = function(v) {
     var i, n = this.length;
     for (i = 0; i < n; ++i) {
@@ -123,10 +103,6 @@ function schedule() {
   //SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   print("Spreadsheet: " + spreadsheet.getName());
-  //if (spreadsheet.getName() !== "Sharehouse Chore Allocator Script") {
-  //  print("ERR: Invalid spreadsheet - exiting");
-  //  return;
-  //}
   
   var sheet_init = spreadsheet.getActiveSheet();
   var sheet_chores = spreadsheet.getSheetByName("Chores");  
@@ -516,15 +492,6 @@ function scheduleSort(x, y) {
   return (x.maxCostDiff - y.maxCostDiff);
 }
 
-/** Don't sort choreSet - the position of a chore in a choreSet is its ID 
-
-function choreSortByEffortAsc(x, y) {
-  return (Math.round(x.frequency*x.time) - Math.round(y.frequency*y.time));
-}
-function choreSortByEffortDesc(x, y) {
-  return (Math.round(y.frequency*y.time) - Math.round(x.frequency*x.time));
-}
-
 **/
 
 // ------------------------------------------------------------
@@ -614,8 +581,6 @@ function chooseBestSchedule(tSchedule) {
   //TODO sort the scheduleSet by maxCostDiff & return the top scoring one
   scheduleSet.sort(scheduleSort);
   
-  //return scheduleSet[scheduleSet.length-1].jsonClone();
-  //return tSchedule.jsonClone();
   return scheduleSet[0].jsonClone();
 }
 
@@ -629,12 +594,8 @@ function onOpen() {
     functionName : "schedule"
   }];
   
-  //if (spreadsheetname === "Sharehouse Chore Allocator Script") {
-    Logger.log("Sharehouse Chore Allocator Script spreadsheet - adding task scheduler");
-    spreadsheet.addMenu("Chores", schedulerEntries);
-  //} else {
-  //  Logger.log("Not the Sharehouse Chore Allocator Script spreadsheet - no task scheduler");
-  //}
+  Logger.log("Sharehouse Chore Allocator Script spreadsheet - adding task scheduler");
+  spreadsheet.addMenu("Chores", schedulerEntries);
   
 };
 
