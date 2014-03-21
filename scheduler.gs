@@ -17,7 +17,8 @@ Array.prototype.nrange = function() {
 };
 
 Array.prototype.shuffle = function() {
-    for (var j,x,i = this.length; i; j=Math.floor(Math.random()*i), x=this[--i], this[i]=this[j], this[j]=x);
+    for (var j,x,i = this.length; i; j=Math.floor(Math.random()*i), x=this[--i], 
+	  this[i]=this[j], this[j]=x);
     return this;
 };
 
@@ -48,25 +49,19 @@ Object.prototype.jsonString = function() {
     return JSON.stringify(this, undefined, 4);
 }
 
-// attach the .compare method to Array's prototype to call it on any array
 Array.prototype.compare = function (array) {
-    // if the other array is a falsy value, return
     if (!array)
         return false;
 
-    // compare lengths - can save a lot of time
     if (this.length != array.length)
         return false;
 
     for (var i = 0, l=this.length; i < l; i++) {
-        // Check if we have nested arrays
         if (this[i] instanceof Array && array[i] instanceof Array) {
-            // recurse into the nested arrays
             if (!this[i].compare(array[i]))
                 return false;
         }
         else if (this[i] != array[i]) {
-            // Warning - two different object instances will never be equal: {x:20} != {x:20}
             return false;
         }
     }
@@ -108,7 +103,8 @@ function schedule() {
   var sheet_chores = spreadsheet.getSheetByName("Chores");  
   spreadsheet.setActiveSheet(sheet_chores)
   var sheet_current = spreadsheet.getActiveSheet();
-  print("Set active sheet: " + sheet_init.getName() + " -> " + sheet_chores.getName());
+  print("Set active sheet: " + sheet_init.getName() + " -> " + 
+    sheet_chores.getName());
   if (sheet_current.getName() !== "Chores") {
     print("ERR: Invalid sheet - exiting");
     return;
@@ -168,7 +164,8 @@ function schedule() {
       housemates.push(String(housemate));
       print("Found housemate \"" + housemate + "\"");
     } else if (LOG_LEVEL > 0) {
-      print("WARN: Column " + String(c+1) + " with header \"" + colheader[c] + "\" expected to contain a housemate. Skipped");
+      print("WARN: Column " + String(c+1) + " with header \"" + colheader[c] + 
+	    "\" expected to contain a housemate. Skipped");
     }
   }
   if (housemates.length == 0) {
@@ -192,7 +189,8 @@ function schedule() {
     }
   }
   if (chore_rowEnd < 0) {
-    print("ERR: Failed to find 'end' marker at bottom of chores - exiting", cell_scriptBox);
+    print("ERR: Failed to find 'end' marker at bottom of chores - exiting", 
+	  cell_scriptBox);
     return;
   }
   
@@ -207,24 +205,32 @@ function schedule() {
     var housemateRanks = [];
     var housemateCount = 0;
     if (choreStr.trim() === '') {
-      if (LOG_LEVEL > 0) print("WARN: Row " + String(r+1) + " is blank - ignoring");
+      if (LOG_LEVEL > 0) 
+	    print("WARN: Row " + String(r+1) + " is blank - ignoring");
     } else if (freqStr.match("[1-3]") === null) {
-      if (LOG_LEVEL > 0) print("WARN: Row " + String(r+1) + ", chore frequency not in range [1-3] - ignoring chore '" + choreStr + "'");
+      if (LOG_LEVEL > 0) 
+	    print("WARN: Row " + String(r+1) + 
+		  ", chore frequency not in range [1-3] - ignoring chore '" +choreStr+ "'");
     } else if (timeStr.match("[1-5]") === null) {
-      if (LOG_LEVEL > 0) print("WARN: Row " + String(r+1) + ", chore time required not in range [1-5] - ignoring chore '" + choreStr + "'");
+      if (LOG_LEVEL > 0) 
+	    print("WARN: Row " + String(r+1) + 
+		  ", chore time required not in range [1-5] - ignoring chore '" + choreStr + 
+		  "'");
     } else {
       // housemate prefs
       for (var i=0; i<housemateCols.length; i++) {
         var rankStr = String(row[housemateCols[i]]);
         if (rankStr.trim() === '') {
           if (LOG_LEVEL > 0)
-            print("WARN: Row " + String(r+1) + ", no preference for '" + housemates[i] + "' doing '" + choreStr + "' - defaulting to 3");
+            print("WARN: Row " + String(r+1) + ", no preference for '" + 
+			  housemates[i] + "' doing '" + choreStr + "' - defaulting to 3");
           rankStr = "3";
         }
         if (rankStr.match("[1-5]") === null) {
           if (LOG_LEVEL > 0) 
-            print("WARN: Row " + String(r+1) + ", '" + housemates[i] + "' preference for doing '" + choreStr + "' not in range [1-5]. "+
-            "Housemate will not be considered for this chore");
+            print("WARN: Row " + String(r+1) + ", '" + housemates[i] + 
+			  "' preference for doing '" + choreStr + "' not in range [1-5]. " +
+              "Housemate will not be considered for this chore");
           housemateRanks.push(-1);
         } else {
           housemateCount++;
@@ -232,13 +238,16 @@ function schedule() {
         }
       }
       if (housemateCount == 0) {
-        if (LOG_LEVEL > 0) print("WARN: Row " + String(r+1) + ", no housemate preferences set - ignoring chore '" + choreStr + "'");
+        if (LOG_LEVEL > 0) 
+		print("WARN: Row " + String(r+1) + 
+		  ", no housemate preferences set - ignoring chore '" + choreStr + "'");
       } else {    
         // values valid - create a chore
         print("Valid chore on row " + String(r+1) + " - '" + choreStr + "'");
         nChores++;
         choreSet.push({
-          name: choreStr, row: r, frequency: parseInt(freqStr), time: parseInt(timeStr), housemateWeights: housemateRanks.clone(), 
+          name: choreStr, row: r, frequency: parseInt(freqStr), 
+		  time: parseInt(timeStr), housemateWeights: housemateRanks.clone(), 
           housemateAssigned: null, cost: 0
         });
       }
@@ -273,7 +282,7 @@ function schedule() {
   var templateSchedule={
     choreSet: choreSet.jsonClone(),
     housemateSet: housemateSet.jsonClone(),
-    avgCost: 0, sumCost: 0, avgCostOffset: 0, maxCostOffset: 0, maxCostDiff: 0
+    maxCostDiff: 0
   };
   
   // 6 Choose the 'best' schedule
@@ -302,11 +311,13 @@ function schedule() {
   }
   
   sheet_current.getRange(1+ROW_CHART, 1+COL_CHART_HOUSEMATES, 13, 3).setValue("");
-  var newChartDataRange = sheet_current.getRange(1+ROW_CHART -1, 1+COL_CHART_HOUSEMATES, housemates.length +1, 3);
+  var newChartDataRange = sheet_current.getRange(1+ROW_CHART -1, 
+    1+COL_CHART_HOUSEMATES, housemates.length +1, 3);
   
   // 7.1 entering housemate data cells
   for (var h=0; h<housemates.length; h++) {
-    var cell_housemate = sheet_current.getRange(1+ROW_CHART+h, COL_CHART_HOUSEMATES+1); 
+    var cell_housemate = sheet_current.getRange(1+ROW_CHART+h, 
+      COL_CHART_HOUSEMATES+1); 
     var cell_effort = sheet_current.getRange(1+ROW_CHART+h, COL_CHART_EFFORT+1);
     var cell_cost = sheet_current.getRange(1+ROW_CHART+h, COL_CHART_COST+1);
     cell_housemate.setValue(winnerSchedule.housemateSet[h].name);
@@ -316,14 +327,16 @@ function schedule() {
   
   var charts = sheet_current.getCharts();
   if (charts.length != 1) {
-    print("ERR: Expected to find exactly 1 chart in the spreadsheet - exiting", cell_scriptBox);
+    print("ERR: Expected to find exactly 1 chart in the spreadsheet - exiting", 
+	  cell_scriptBox);
     return;
   }
   var chart = charts[0];
   var ranges = chart.getRanges();
   var builder = chart.modify();
   if (ranges.length != 1) {
-    print("ERR: Expected to find exactly 1 dataset for the chart - exiting", cell_scriptBox);
+    print("ERR: Expected to find exactly 1 dataset for the chart - exiting", 
+	  cell_scriptBox);
     return;
   }
   var range = ranges[0];
@@ -340,7 +353,7 @@ function schedule() {
     print("=== END SCHEDULE ===");
   }
     
-  sheet_current.getRange(2,COL_SCHEDULE+1,chore_rowEnd-chore_rowStart,1).setValue("-");
+  sheet_current.getRange(2, COL_SCHEDULE+1, chore_rowEnd-chore_rowStart,1).setValue("-");
   for (var i=0; i<winnerSchedule.choreSet.length; i++) {
     var chore = winnerSchedule.choreSet[i];
     sheet_current.getRange(chore.row+1, COL_SCHEDULE+1).setValue(
@@ -366,7 +379,7 @@ choreSet : [
 schedule : {
   choreSet, //ordered
   housemateSet,
-  avgCost, sumCost, sumEffort, avgCostOffset, maxCostOffset, maxCostDiff // all costs here are per housemate
+  maxCostDiff // all costs here are per housemate
 }
 
 housemateSet : [
@@ -467,7 +480,9 @@ function choreCost(chore, housemate, housemateNum) {
   
   if (chore.housemateWeights[housemateNum] < 0)
     return -1; 
-  return (chore.frequency*chore.time*(1 + RANK_WEIGHT*((1+(rank - housemate.minRank))/(1+(housemate.maxRank - housemate.minRank)))));
+  return (chore.frequency*chore.time*(1 + RANK_WEIGHT*(
+	  (1+(rank - housemate.minRank))/(1+(housemate.maxRank - housemate.minRank))
+    )));
 }
 
 /** Lowest-cost chore available to a housemate, according to his/her rankings
@@ -541,18 +556,23 @@ function chooseBestSchedule(tSchedule) {
             c = lowestEffortChore(choresIn, housemateOrder[i]);
           } else {
             //METHOD C
-            c = lowestCostChore(choresIn, scheduleOut.housemateSet[housemateOrder[i]], housemateOrder[i]);
+            c = lowestCostChore(choresIn, scheduleOut.housemateSet[housemateOrder[i]],
+              housemateOrder[i]);
           }
           //skip if housemate cannot do any remaining chores
           if (c >= 0) {
             //when pushing a chore in, assign the housemate & compute their cost in both the schedule & housemateSet
             var chore = choresIn.splice(c,1)[0];
             chore.housemateAssigned = housemateOrder[i];
-            chore.cost = choreCost(chore, scheduleOut.housemateSet[chore.housemateAssigned], chore.housemateAssigned); 
+            chore.cost = choreCost(chore, 
+	          scheduleOut.housemateSet[chore.housemateAssigned], 
+			  chore.housemateAssigned); 
             scheduleOut.housemateSet[chore.housemateAssigned].sumCost += chore.cost;
-            scheduleOut.housemateSet[chore.housemateAssigned].sumEffort += chore.frequency*chore.time;
-            scheduleOut.housemateSet[chore.housemateAssigned].chores.push(scheduleOut.choreSet.length);
-            scheduleOut.choreSet.push(chore.jsonClone()); // ???
+            scheduleOut.housemateSet[chore.housemateAssigned].sumEffort += 
+			  chore.frequency*chore.time;
+            scheduleOut.housemateSet[chore.housemateAssigned].chores.push(
+			  scheduleOut.choreSet.length);
+            scheduleOut.choreSet.push(chore.jsonClone());
           }
           // break if no chores left
           if (choresIn.length==0) break;
@@ -562,11 +582,6 @@ function chooseBestSchedule(tSchedule) {
       // compute schedule stats
       var maxCost = maxHousemateCost(scheduleOut.housemateSet);
       var minCost = minHousemateCost(scheduleOut.housemateSet);
-      scheduleOut.avgCost = null; //unused; calculate if needed
-      scheduleOut.sumCost = null; //unused; calculate if needed
-      scheduleOut.sumEffort = null; //unused; calculate if needed
-      scheduleOut.avgCostOffset = null; //unused; calculate if needed
-      scheduleOut.maxCostOffset = null; //unused; calculate if needed
       scheduleOut.maxCostDiff = Math.abs(maxCost - minCost);
       
       // add to the set
@@ -578,9 +593,7 @@ function chooseBestSchedule(tSchedule) {
     print(scheduleSet.jsonString());
   }
   
-  //TODO sort the scheduleSet by maxCostDiff & return the top scoring one
-  scheduleSet.sort(scheduleSort);
-  
+  scheduleSet.sort(scheduleSort);  
   return scheduleSet[0].jsonClone();
 }
 
@@ -603,5 +616,5 @@ function onOpen() {
 
 /*
 Notes:
- - could easily expand to sort by effort instead of preferences. Look at line ~550 --> 570
+ - could easily expand to sort by effort instead of preferences. Look at line ~580+
  */
